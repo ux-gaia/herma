@@ -36,7 +36,7 @@ export default function App(): React.JSX.Element {
   const [successPath, setSuccessPath] = useState<string | null>(null)
 
   useEffect(() => {
-    return window.sheeter.onCleanWorkspace(() => {
+    return window.herma.onCleanWorkspace(() => {
       clearWorkspace()
     })
   }, [clearWorkspace])
@@ -44,7 +44,7 @@ export default function App(): React.JSX.Element {
   const handleImportSources = async (): Promise<void> => {
     setImportingSources(true)
     try {
-      const files = await window.sheeter.openFiles()
+      const files = await window.herma.openFiles()
       if (files.length > 0) {
         addSourceFiles(files)
       }
@@ -54,7 +54,7 @@ export default function App(): React.JSX.Element {
   }
 
   const handleImportProject = async (): Promise<void> => {
-    const result = await window.sheeter.importProject()
+    const result = await window.herma.importProject()
     if (result.canceled) return
     loadProject(result.config)
   }
@@ -70,7 +70,7 @@ export default function App(): React.JSX.Element {
     }
 
     try {
-      const result = await window.sheeter.exportProject(config)
+      const result = await window.herma.exportProject(config)
       if (result.canceled) return
       if (result.warnings.length > 0) {
         setExportWarnings(result.warnings)
@@ -106,7 +106,7 @@ export default function App(): React.JSX.Element {
 
     setExporting(true)
     try {
-      const result = await window.sheeter.exportWorkbook(config)
+      const result = await window.herma.exportWorkbook(config)
       if (result.canceled) {
         setExportDialogOpen(false)
         return
@@ -126,61 +126,83 @@ export default function App(): React.JSX.Element {
   }
 
   return (
-    <div className="flex h-screen flex-col bg-slate-100 text-slate-900">
-      <header className="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight">Sheeter</h1>
-          <p className="text-sm text-slate-500">
-            Copy spreadsheet fragments into a template workbook
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center justify-end gap-2">
-          <IconButton icon={FolderInput} onClick={() => void handleImportProject()}>
-            Import project
-          </IconButton>
-          <IconButton icon={FileDown} onClick={() => void handleExportProject()}>
-            Export project
-          </IconButton>
-          <IconButton
-            icon={FileUp}
-            onClick={() => void handleImportSources()}
-            disabled={importingSources}
-          >
-            {importingSources ? 'Importing…' : 'Import sources'}
-          </IconButton>
-          <IconButton icon={Play} variant="primary" onClick={() => void handleExportWorkbook()}>
-            Generate
-          </IconButton>
-        </div>
-      </header>
+    <div className="flex h-screen flex-col text-slate-900">
+      <div className="glass-chrome app-chrome">
+        <div className="app-chrome-titlebar" aria-hidden="true" />
 
-      <div className="border-b border-slate-200 bg-white px-4">
-        <nav className="flex gap-1">
-          <TabButton
-            active={activeTab === 'configuration'}
-            onClick={() => setActiveTab('configuration')}
-            icon={Settings}
-          >
-            Configuration
-          </TabButton>
-          <TabButton
-            active={activeTab === 'automations'}
-            onClick={() => setActiveTab('automations')}
-            icon={Zap}
-          >
-            Automations
-          </TabButton>
-        </nav>
+        <header className="app-chrome-header flex items-center justify-between px-6 py-3">
+          <div className="app-chrome-brand flex items-center gap-4">
+            <img
+              src="/icon.png"
+              alt=""
+              className="app-chrome-mark"
+              width={56}
+              height={56}
+              draggable={false}
+            />
+            <div>
+              <h1 className="app-chrome-heading text-lg font-semibold tracking-tight text-slate-900">
+                Herma
+              </h1>
+              <p className="text-sm text-slate-500">
+                Copy spreadsheet fragments into a template workbook
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <IconButton icon={FolderInput} onClick={() => void handleImportProject()}>
+              Import project
+            </IconButton>
+            <IconButton icon={FileDown} onClick={() => void handleExportProject()}>
+              Export project
+            </IconButton>
+            <IconButton
+              icon={FileUp}
+              onClick={() => void handleImportSources()}
+              disabled={importingSources}
+            >
+              {importingSources ? 'Importing…' : 'Import sources'}
+            </IconButton>
+            <IconButton icon={Play} variant="primary" onClick={() => void handleExportWorkbook()}>
+              Generate
+            </IconButton>
+          </div>
+        </header>
+
+        <div className="px-4 pb-2.5">
+          <nav className="glass-tab-group">
+            <TabButton
+              active={activeTab === 'configuration'}
+              onClick={() => setActiveTab('configuration')}
+              icon={Settings}
+            >
+              Configuration
+            </TabButton>
+            <TabButton
+              active={activeTab === 'automations'}
+              onClick={() => setActiveTab('automations')}
+              icon={Zap}
+              variant="automation"
+            >
+              Automations
+            </TabButton>
+          </nav>
+        </div>
       </div>
 
-      <main className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4">
+      <main
+        className={[
+          'flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4',
+          activeTab === 'automations' ? 'main-automation' : ''
+        ].join(' ')}
+      >
         {activeTab === 'configuration' ? (
           <>
             <TemplatePanel />
             <ConstantsPanel />
 
             <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 lg:grid-cols-2">
-              <section className="flex min-h-[320px] flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <section className="glass-panel flex min-h-[320px] flex-col p-4">
                 <SectionHeader
                   title="Source files"
                   icon={FileUp}
@@ -213,23 +235,27 @@ function TabButton({
   active,
   onClick,
   icon: Icon,
+  variant = 'default',
   children
 }: {
   active: boolean
   onClick: () => void
   icon?: React.ComponentType<{ className?: string; strokeWidth?: number }>
+  variant?: 'default' | 'automation'
   children: React.ReactNode
 }): React.JSX.Element {
+  const activeClass =
+    variant === 'automation' && active
+      ? 'glass-tab-active-automation'
+      : active
+        ? 'glass-tab-active'
+        : ''
+
   return (
     <button
       type="button"
       onClick={onClick}
-      className={[
-        'inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition',
-        active
-          ? 'border-emerald-600 text-emerald-700'
-          : 'border-transparent text-slate-500 hover:text-slate-700'
-      ].join(' ')}
+      className={['glass-tab text-xs font-medium transition', activeClass].join(' ')}
     >
       {Icon && <Icon className="h-4 w-4 shrink-0" strokeWidth={2} aria-hidden="true" />}
       {children}

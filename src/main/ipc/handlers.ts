@@ -14,7 +14,7 @@ import { isSupportedSpreadsheet, isTemplateFile, readSourceFileMetadata } from '
 import { writeWorkbook } from '../spreadsheet/writer'
 
 export function registerIpcHandlers(): void {
-  ipcMain.handle('sheeter:select-template', async () => {
+  ipcMain.handle('herma:select-template', async () => {
     const result = await dialog.showOpenDialog({
       title: 'Select template workbook',
       properties: ['openFile'],
@@ -33,7 +33,7 @@ export function registerIpcHandlers(): void {
     return createTemplateFromPath(path)
   })
 
-  ipcMain.handle('sheeter:open-files', async (): Promise<SourceFile[]> => {
+  ipcMain.handle('herma:open-files', async (): Promise<SourceFile[]> => {
     const result = await dialog.showOpenDialog({
       title: 'Import spreadsheets',
       properties: ['openFile', 'multiSelections'],
@@ -64,7 +64,7 @@ export function registerIpcHandlers(): void {
     return files
   })
 
-  ipcMain.handle('sheeter:select-output-directory', async () => {
+  ipcMain.handle('herma:select-output-directory', async () => {
     const result = await dialog.showOpenDialog({
       title: 'Select output directory',
       properties: ['openDirectory', 'createDirectory']
@@ -77,7 +77,7 @@ export function registerIpcHandlers(): void {
     return result.filePaths[0]
   })
 
-  ipcMain.handle('sheeter:select-iteration-file', async () => {
+  ipcMain.handle('herma:select-iteration-file', async () => {
     const result = await dialog.showOpenDialog({
       title: 'Select iteration spreadsheet',
       properties: ['openFile'],
@@ -101,15 +101,15 @@ export function registerIpcHandlers(): void {
     return filePath
   })
 
-  ipcMain.handle('sheeter:validate-iteration-sheet', (_event, request: ValidateIterationSheetRequest) => {
+  ipcMain.handle('herma:validate-iteration-sheet', (_event, request: ValidateIterationSheetRequest) => {
     return validateAutomationIterationSheet(request)
   })
 
-  ipcMain.handle('sheeter:run-automation', async (_event, request: AutomationRunRequest) => {
+  ipcMain.handle('herma:run-automation', async (_event, request: AutomationRunRequest) => {
     return runAutomationBatch(request)
   })
 
-  ipcMain.handle('sheeter:save-workbook', async (_event, config: ExportWorkbookConfig) => {
+  ipcMain.handle('herma:save-workbook', async (_event, config: ExportWorkbookConfig) => {
     const parsed = exportWorkbookConfigSchema.parse(config) as ExportWorkbookConfig
     const copyRules = parsed.mappings.filter((rule) => rule.ruleType === 'copy')
 
@@ -144,11 +144,11 @@ export function registerIpcHandlers(): void {
     }
   })
 
-  ipcMain.handle('sheeter:export-project', async (_event, config: ProjectConfig) => {
+  ipcMain.handle('herma:export-project', async (_event, config: ProjectConfig) => {
     const result = await dialog.showSaveDialog({
       title: 'Export project configuration',
-      defaultPath: 'sheeter.config.json',
-      filters: [{ name: 'Sheeter Project', extensions: ['json'] }]
+      defaultPath: 'herma.config.json',
+      filters: [{ name: 'Herma Project', extensions: ['json'] }]
     })
 
     if (result.canceled || !result.filePath) {
@@ -159,11 +159,11 @@ export function registerIpcHandlers(): void {
     return { canceled: false as const, filePath: result.filePath, warnings }
   })
 
-  ipcMain.handle('sheeter:import-project', async () => {
+  ipcMain.handle('herma:import-project', async () => {
     const result = await dialog.showOpenDialog({
       title: 'Import project configuration',
       properties: ['openFile'],
-      filters: [{ name: 'Sheeter Project', extensions: ['json'] }]
+      filters: [{ name: 'Herma Project', extensions: ['json'] }]
     })
 
     if (result.canceled || !result.filePaths[0]) {
@@ -174,7 +174,7 @@ export function registerIpcHandlers(): void {
     return { canceled: false as const, config, filePath: result.filePaths[0] }
   })
 
-  ipcMain.handle('sheeter:preview-selection', (_event, input: SelectionPreviewRequest) => {
+  ipcMain.handle('herma:preview-selection', (_event, input: SelectionPreviewRequest) => {
     return previewSelectionFirstCellSafe(input)
   })
 }

@@ -6,7 +6,7 @@ interface SheetBrowserProps {
 
 export function SheetBrowser({ file }: SheetBrowserProps): React.JSX.Element {
   return (
-    <ul className="divide-y divide-slate-100">
+    <ul className="divide-y divide-white/40">
       {file.sheets.map((sheet) => (
         <li key={sheet.id} className="px-3 py-2">
           <p className="truncate text-sm text-slate-700">{sheet.name}</p>

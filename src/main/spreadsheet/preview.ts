@@ -41,6 +41,12 @@ function resolveHint(selection: SourceSelection): string {
   switch (selection.kind) {
     case 'columns': {
       const hasFilters = Boolean(selection.columns?.filters?.length)
+      const inverted = Boolean(selection.columns?.invert)
+      if (inverted) {
+        return hasFilters
+          ? 'Sample from all columns except the excluded pattern (header row shown when filters are active).'
+          : 'Sample from all columns except the excluded pattern.'
+      }
       return hasFilters
         ? 'Sample from the selected columns (header row shown when filters are active).'
         : 'Sample from the top-left of the selected columns.'

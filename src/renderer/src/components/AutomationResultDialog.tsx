@@ -62,15 +62,15 @@ export function AutomationResultDialog({
   const statusIconClass = running
     ? 'text-slate-400 animate-spin'
     : fullSuccess
-      ? 'text-emerald-600'
+      ? 'text-accent'
       : partialSuccess
         ? 'text-amber-600'
         : 'text-red-600'
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4">
-      <div className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
-        <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-900">
+    <div className="glass-overlay fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="glass-modal max-h-[85vh] w-full max-w-md overflow-y-auto p-6">
+        <h3 className="flex items-center gap-2 text-base font-semibold text-slate-900">
           <StatusIcon className={`h-5 w-5 shrink-0 ${statusIconClass}`} strokeWidth={2} aria-hidden="true" />
           {title}
         </h3>
@@ -83,7 +83,7 @@ export function AutomationResultDialog({
 
         {!running && result && (
           <div className="mt-4 space-y-2 text-sm">
-            <p className={fullSuccess ? 'text-emerald-700' : partialSuccess ? 'text-amber-800' : 'text-red-700'}>
+            <p className={fullSuccess ? 'text-accent' : partialSuccess ? 'text-amber-800' : 'text-red-700'}>
               {fullSuccess && (
                 <>
                   Generated <strong>{generatedFiles}</strong>{' '}
@@ -134,11 +134,7 @@ export function AutomationResultDialog({
 
         {!running && (
           <div className="mt-6 flex justify-end">
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
-            >
+            <button type="button" onClick={onClose} className="glass-button-primary">
               Close
             </button>
           </div>

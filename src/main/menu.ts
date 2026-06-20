@@ -1,6 +1,18 @@
 import { BrowserWindow, Menu, app, dialog, shell } from 'electron'
 import { runMergeDirectorySpreadsheets } from './merge-directory'
 
+function quitApplication(): void {
+  app.quit()
+}
+
+function createQuitMenuItem(): Electron.MenuItemConstructorOptions {
+  return {
+    label: process.platform === 'darwin' ? 'Quit Herma' : 'Quit',
+    accelerator: 'CmdOrCtrl+Q',
+    click: quitApplication
+  }
+}
+
 export function createApplicationMenu(getMainWindow: () => BrowserWindow | null): void {
   const isMac = process.platform === 'darwin'
 
@@ -8,7 +20,7 @@ export function createApplicationMenu(getMainWindow: () => BrowserWindow | null)
     ...(isMac
       ? [
           {
-            label: 'Sheeter',
+            label: 'Herma',
             submenu: [
               { role: 'about' as const },
               { type: 'separator' as const },
@@ -18,7 +30,7 @@ export function createApplicationMenu(getMainWindow: () => BrowserWindow | null)
               { role: 'hideOthers' as const },
               { role: 'unhide' as const },
               { type: 'separator' as const },
-              { role: 'quit' as const }
+              createQuitMenuItem()
             ]
           }
         ]
@@ -35,14 +47,9 @@ export function createApplicationMenu(getMainWindow: () => BrowserWindow | null)
           label: 'Merge directory spreadsheets…',
           click: () => void runMergeDirectorySpreadsheets(getMainWindow())
         },
-        { type: 'separator' },
-        {
-          label: 'Exit',
-          accelerator: 'CmdOrCtrl+Q',
-          click: () => {
-            app.quit()
-          }
-        }
+        ...(isMac
+          ? []
+          : [{ type: 'separator' as const }, createQuitMenuItem()])
       ]
     },
     {
@@ -79,9 +86,9 @@ export function createApplicationMenu(getMainWindow: () => BrowserWindow | null)
       role: 'help',
       submenu: [
         {
-          label: 'Learn more about Sheeter',
+          label: 'Learn more about Herma',
           click: () => {
-            void shell.openExternal('https://github.com/sheeter/sheeter')
+            void shell.openExternal('https://github.com/herma/herma')
           }
         }
       ]
@@ -111,5 +118,5 @@ async function confirmCleanWorkspace(mainWindow: BrowserWindow | null): Promise<
     return
   }
 
-  mainWindow?.webContents.send('sheeter:clean-workspace')
+  mainWindow?.webContents.send('herma:clean-workspace')
 }

@@ -76,6 +76,7 @@ export function RuleEditor({ rule, onClose }: RuleEditorProps): React.JSX.Elemen
   )
   const [columnNames, setColumnNames] = useState(copyRule?.source.columns?.names?.join(', ') ?? '')
   const [headerRow, setHeaderRow] = useState(String(copyRule?.source.columns?.headerRow ?? 1))
+  const [invertColumns, setInvertColumns] = useState(Boolean(copyRule?.source.columns?.invert))
   const [useFilters, setUseFilters] = useState(Boolean(copyRule?.source.columns?.filters?.length))
   const [filters, setFilters] = useState<ColumnFilter[]>(
     copyRule?.source.columns?.filters ?? []
@@ -134,6 +135,7 @@ export function RuleEditor({ rule, onClose }: RuleEditorProps): React.JSX.Elemen
             columnIndexes,
             columnNames,
             headerRow,
+            invertColumns,
             useFilters,
             filters,
             startRow,
@@ -152,7 +154,7 @@ export function RuleEditor({ rule, onClose }: RuleEditorProps): React.JSX.Elemen
 
       setPreviewLoading(true)
       try {
-        const result = await window.sheeter.previewSelection({
+        const result = await window.herma.previewSelection({
           filePath: sourceFile.path,
           sheetName: sourceSheet.name,
           format: sourceFile.format,
@@ -177,6 +179,7 @@ export function RuleEditor({ rule, onClose }: RuleEditorProps): React.JSX.Elemen
     columnIndexes,
     columnNames,
     headerRow,
+    invertColumns,
     useFilters,
     filters,
     startRow,
@@ -193,7 +196,7 @@ export function RuleEditor({ rule, onClose }: RuleEditorProps): React.JSX.Elemen
   }
 
   const handlePickOutputDirectory = async (): Promise<void> => {
-    const directory = await window.sheeter.selectOutputDirectory()
+    const directory = await window.herma.selectOutputDirectory()
     if (directory) {
       setOutputDirectory(directory)
     }
@@ -245,6 +248,7 @@ export function RuleEditor({ rule, onClose }: RuleEditorProps): React.JSX.Elemen
           columnIndexes,
           columnNames,
           headerRow,
+          invertColumns,
           useFilters,
           filters,
           startRow,
@@ -296,16 +300,16 @@ export function RuleEditor({ rule, onClose }: RuleEditorProps): React.JSX.Elemen
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4">
-      <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
-        <h3 className="text-lg font-semibold text-slate-900">{editorTitle}</h3>
+    <div className="glass-overlay fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="glass-modal max-h-[90vh] w-full max-w-2xl overflow-y-auto p-6">
+        <h3 className="text-base font-semibold text-slate-900">{editorTitle}</h3>
 
         <div className="mt-4 space-y-4">
           <Field label="Rule type" icon={GitMerge}>
             <select
               value={ruleType}
               onChange={(event) => setRuleType(event.target.value as CopyRuleType)}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+              className="glass-select w-full px-3 py-2 text-sm"
             >
               <option value="copy">Copy selection</option>
               <option value="merge_sheets">Merge sheets into one</option>
@@ -339,7 +343,7 @@ export function RuleEditor({ rule, onClose }: RuleEditorProps): React.JSX.Elemen
                   const firstSheet = sourceFiles.find((file) => file.id === nextFileId)?.sheets[0]
                   setSourceSheetId(firstSheet?.id ?? '')
                 }}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                className="glass-select w-full px-3 py-2 text-sm"
               >
                 {sourceFiles.map((file) => (
                   <option key={file.id} value={file.id}>
@@ -353,7 +357,7 @@ export function RuleEditor({ rule, onClose }: RuleEditorProps): React.JSX.Elemen
               <select
                 value={sourceSheetId}
                 onChange={(event) => setSourceSheetId(event.target.value)}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                className="glass-select w-full px-3 py-2 text-sm"
               >
                 {sheetsForFile.map((sheet) => (
                   <option key={sheet.id} value={sheet.id}>
@@ -368,7 +372,7 @@ export function RuleEditor({ rule, onClose }: RuleEditorProps): React.JSX.Elemen
             <select
               value={kind}
               onChange={(event) => setKind(event.target.value as SelectionKind)}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+              className="glass-select w-full px-3 py-2 text-sm"
             >
               <option value="columns">Columns</option>
               <option value="rows">Rows</option>
@@ -378,12 +382,12 @@ export function RuleEditor({ rule, onClose }: RuleEditorProps): React.JSX.Elemen
           </Field>
 
           {kind === 'columns' && (
-            <div className="space-y-3 rounded-xl border border-slate-100 bg-slate-50 p-4">
+            <div className="space-y-3 glass-inset p-4">
               <Field label="Column mode" icon={Columns3}>
                 <select
                   value={columnMode}
                   onChange={(event) => setColumnMode(event.target.value as 'index' | 'header')}
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                  className="glass-select w-full px-3 py-2 text-sm"
                 >
                   <option value="index">Column numbers</option>
                   <option value="header">Header names</option>
@@ -391,7 +395,15 @@ export function RuleEditor({ rule, onClose }: RuleEditorProps): React.JSX.Elemen
               </Field>
 
               {columnMode === 'index' ? (
-                <Field label="Columns" icon={Hash} hint="Comma-separated, e.g. 1, 3">
+                <Field
+                  label={invertColumns ? 'Columns to exclude' : 'Columns'}
+                  icon={Hash}
+                  hint={
+                    invertColumns
+                      ? 'Comma-separated indexes to skip, e.g. 1, 3'
+                      : 'Comma-separated, e.g. 1, 3'
+                  }
+                >
                   <IconInput
                     icon={Hash}
                     value={columnIndexes}
@@ -407,7 +419,15 @@ export function RuleEditor({ rule, onClose }: RuleEditorProps): React.JSX.Elemen
                       onChange={(event) => setHeaderRow(event.target.value)}
                     />
                   </Field>
-                  <Field label="Header names" icon={Columns3} hint='Comma-separated, e.g. Producto, Total'>
+                  <Field
+                    label={invertColumns ? 'Header names to exclude' : 'Header names'}
+                    icon={Columns3}
+                    hint={
+                      invertColumns
+                        ? 'Comma-separated names to skip, e.g. Producto, Total'
+                        : 'Comma-separated, e.g. Producto, Total'
+                    }
+                  >
                     <IconInput
                       icon={Columns3}
                       value={columnNames}
@@ -416,6 +436,15 @@ export function RuleEditor({ rule, onClose }: RuleEditorProps): React.JSX.Elemen
                   </Field>
                 </>
               )}
+
+              <label className="flex items-center gap-2 text-sm text-slate-700">
+                <input
+                  type="checkbox"
+                  checked={invertColumns}
+                  onChange={(event) => setInvertColumns(event.target.checked)}
+                />
+                Invert selection (copy all columns except the pattern)
+              </label>
 
               <label className="flex items-center gap-2 text-sm text-slate-700">
                 <input
@@ -446,7 +475,7 @@ export function RuleEditor({ rule, onClose }: RuleEditorProps): React.JSX.Elemen
                   <button
                     type="button"
                     onClick={addFilter}
-                    className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-white"
+                    className="glass-button glass-button-sm font-medium"
                   >
                     + Add filter
                   </button>
@@ -456,7 +485,7 @@ export function RuleEditor({ rule, onClose }: RuleEditorProps): React.JSX.Elemen
           )}
 
           {kind === 'rows' && (
-            <div className="grid grid-cols-2 gap-3 rounded-xl border border-slate-100 bg-slate-50 p-4">
+            <div className="grid grid-cols-2 gap-3 glass-inset p-4">
               <Field label="From row" icon={Rows3}>
                 <IconInput
                   icon={Rows3}
@@ -475,18 +504,18 @@ export function RuleEditor({ rule, onClose }: RuleEditorProps): React.JSX.Elemen
           )}
 
           {kind === 'block' && (
-            <div className="grid grid-cols-2 gap-3 rounded-xl border border-slate-100 bg-slate-50 p-4">
+            <div className="grid grid-cols-2 gap-3 glass-inset p-4">
               <Field label="From column">
-                <input value={startCol} onChange={(e) => setStartCol(e.target.value)} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+                <input value={startCol} onChange={(e) => setStartCol(e.target.value)} className="glass-input w-full px-3 py-2 text-sm" />
               </Field>
               <Field label="From row">
-                <input value={blockStartRow} onChange={(e) => setBlockStartRow(e.target.value)} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+                <input value={blockStartRow} onChange={(e) => setBlockStartRow(e.target.value)} className="glass-input w-full px-3 py-2 text-sm" />
               </Field>
               <Field label="To column">
-                <input value={endCol} onChange={(e) => setEndCol(e.target.value)} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+                <input value={endCol} onChange={(e) => setEndCol(e.target.value)} className="glass-input w-full px-3 py-2 text-sm" />
               </Field>
               <Field label="To row">
-                <input value={blockEndRow} onChange={(e) => setBlockEndRow(e.target.value)} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+                <input value={blockEndRow} onChange={(e) => setBlockEndRow(e.target.value)} className="glass-input w-full px-3 py-2 text-sm" />
               </Field>
             </div>
           )}
@@ -495,12 +524,12 @@ export function RuleEditor({ rule, onClose }: RuleEditorProps): React.JSX.Elemen
             <SelectionPreviewPanel loading={previewLoading} preview={preview} />
           )}
 
-          <div className="grid grid-cols-1 gap-3 rounded-xl border border-emerald-100 bg-emerald-50/40 p-4 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 glass-accent-inset p-4 md:grid-cols-3">
             <Field label="Destination sheet" icon={LayoutTemplate}>
               <select
                 value={templateSheetId}
                 onChange={(event) => handleTemplateSheetChange(event.target.value)}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                className="glass-select w-full px-3 py-2 text-sm"
               >
                 {template!.sheets.map((sheet) => (
                   <option key={sheet.id} value={sheet.id}>
@@ -528,7 +557,7 @@ export function RuleEditor({ rule, onClose }: RuleEditorProps): React.JSX.Elemen
           )}
 
           {ruleType === 'merge_sheets' && (
-            <div className="space-y-3 rounded-xl border border-slate-100 bg-slate-50 p-4">
+            <div className="space-y-3 glass-inset p-4">
               <Field
                 label="Output file name"
                 icon={FileText}
@@ -590,7 +619,7 @@ function FilterRow({
   onRemove: () => void
 }): React.JSX.Element {
   return (
-    <div className="grid grid-cols-1 gap-2 rounded-lg border border-slate-200 bg-white p-3 md:grid-cols-[1fr_1fr_1fr_auto]">
+    <div className="glass-inset grid grid-cols-1 gap-2 p-3 md:grid-cols-[1fr_1fr_1fr_auto]">
       <select
         value={filter.column.mode}
         onChange={(event) =>
@@ -603,7 +632,7 @@ function FilterRow({
             }
           })
         }
-        className="rounded-lg border border-slate-200 px-2 py-2 text-sm"
+        className="glass-select px-2 py-2 text-sm"
       >
         <option value="index">Column #</option>
         <option value="header">Header</option>
@@ -618,7 +647,7 @@ function FilterRow({
               column: { mode: 'index', index: Number(event.target.value) || 1 }
             })
           }
-          className="rounded-lg border border-slate-200 px-2 py-2 text-sm"
+          className="glass-select px-2 py-2 text-sm"
         />
       ) : (
         <input
@@ -629,7 +658,7 @@ function FilterRow({
               column: { mode: 'header', name: event.target.value }
             })
           }
-          className="rounded-lg border border-slate-200 px-2 py-2 text-sm"
+          className="glass-select px-2 py-2 text-sm"
           placeholder="Header name"
         />
       )}
@@ -643,7 +672,7 @@ function FilterRow({
               value: buildFilterValue(event.target.value as FilterValue['kind'], filter.value, constants)
             })
           }
-          className="rounded-lg border border-slate-200 px-2 py-2 text-sm"
+          className="glass-select px-2 py-2 text-sm"
         >
           <option value="literal">Literal</option>
           <option value="constant">Constant</option>
@@ -658,7 +687,7 @@ function FilterRow({
                 value: { kind: 'literal', literal: event.target.value }
               })
             }
-            className="min-w-0 flex-1 rounded-lg border border-slate-200 px-2 py-2 text-sm"
+            className="glass-input min-w-0 flex-1 px-2 py-2 text-sm"
           />
         ) : (
           <select
@@ -669,7 +698,7 @@ function FilterRow({
                 value: { kind: 'constant', constantId: event.target.value }
               })
             }
-            className="min-w-0 flex-1 rounded-lg border border-slate-200 px-2 py-2 text-sm"
+            className="glass-input min-w-0 flex-1 px-2 py-2 text-sm"
           >
             <option value="">Select constant</option>
             {constants.map((constant) => (
@@ -684,7 +713,7 @@ function FilterRow({
       <button
         type="button"
         onClick={onRemove}
-        className="rounded-md px-2 py-1 text-xs text-slate-400 hover:bg-red-50 hover:text-red-600"
+        className="glass-button-ghost glass-button-sm text-slate-600 hover:border-red-200 hover:bg-red-50/90 hover:text-red-600"
       >
         Remove
       </button>
@@ -746,6 +775,7 @@ function buildSourceSelection(
     columnIndexes: string
     columnNames: string
     headerRow: string
+    invertColumns: boolean
     useFilters: boolean
     filters: ColumnFilter[]
     startRow: string
@@ -774,6 +804,7 @@ function buildSourceSelection(
     base.columns = {
       mode: input.columnMode,
       headerRow: parsePositiveInt(input.headerRow, 'Header row'),
+      invert: input.invertColumns || undefined,
       columns:
         input.columnMode === 'index'
           ? parseCommaSeparatedNumbers(input.columnIndexes, 'Columns')

@@ -18,7 +18,7 @@ export function SourcePanel(): React.JSX.Element {
 
   if (sourceFiles.length === 0) {
     return (
-      <div className="flex h-full flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
+      <div className="glass-empty flex h-full flex-col items-center justify-center p-8 text-center">
         <FileUp className="mb-3 h-10 w-10 text-slate-300" strokeWidth={1.5} />
         <p className="text-sm font-medium text-slate-700">No source files yet</p>
         <p className="mt-2 max-w-xs text-sm text-slate-500">
@@ -52,8 +52,8 @@ interface FileCardProps {
 
 function FileCard({ file, expanded, onToggle, onRemove }: FileCardProps): React.JSX.Element {
   return (
-    <section className="rounded-xl border border-slate-200 bg-white shadow-sm">
-      <header className="flex items-center gap-2 border-b border-slate-100 px-3 py-2">
+    <section className="glass-card">
+      <header className="flex items-center gap-2 border-b border-white/40 px-3 py-2">
         <button
           type="button"
           onClick={onToggle}
@@ -62,14 +62,14 @@ function FileCard({ file, expanded, onToggle, onRemove }: FileCardProps): React.
           <span className="text-xs text-slate-400">{expanded ? '▼' : '▶'}</span>
           <FileSpreadsheet className="h-4 w-4 shrink-0 text-slate-400" strokeWidth={2} />
           <span className="truncate text-sm font-medium text-slate-800">{file.name}</span>
-          <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] uppercase tracking-wide text-slate-500">
+          <span className="glass-chip px-2 py-0.5 text-[10px] uppercase tracking-wide">
             {file.format}
           </span>
         </button>
         <button
           type="button"
           onClick={onRemove}
-          className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-slate-400 hover:bg-red-50 hover:text-red-600"
+          className="glass-button-ghost glass-button-sm text-slate-600 hover:border-red-200 hover:bg-red-50/90 hover:text-red-600"
           aria-label={`Remove ${file.name}`}
         >
           <Trash2 className="h-3.5 w-3.5" />

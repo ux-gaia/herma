@@ -1,9 +1,9 @@
 import { existsSync, readFileSync, writeFileSync } from 'fs'
 import { basename, resolve } from 'path'
 import { randomUUID } from 'crypto'
-import { sheeterProjectFileSchema } from '../shared/schemas'
+import { hermaProjectFileSchema } from '../shared/schemas'
 import { configDirectory, relativizeForExport, toPortablePath } from '../shared/paths'
-import type { ProjectConfig, ProjectTemplate, SheeterProjectFile, SourceFile } from '../shared/types/project'
+import type { ProjectConfig, ProjectTemplate, HermaProjectFile, SourceFile } from '../shared/types/project'
 import { readSourceFileMetadata, readTemplateMetadata } from './spreadsheet/reader'
 
 function buildTemplateFromPath(path: string, sheetIds?: Array<{ id: string; name: string }>): ProjectTemplate {
@@ -37,7 +37,7 @@ function resolvePathFromConfig(baseDir: string, storedPath: string): string {
 export function serializeProjectConfig(
   config: ProjectConfig,
   configFilePath: string
-): { file: SheeterProjectFile; warnings: string[] } {
+): { file: HermaProjectFile; warnings: string[] } {
   if (!config.template) {
     throw new Error('A template must be selected before exporting the project configuration.')
   }
@@ -81,7 +81,7 @@ export function serializeProjectConfig(
   }
 
   return {
-    file: sheeterProjectFileSchema.parse(file),
+    file: hermaProjectFileSchema.parse(file),
     warnings
   }
 }
@@ -94,7 +94,7 @@ export function writeProjectConfigFile(config: ProjectConfig, configFilePath: st
 
 export function loadProjectConfigFile(configFilePath: string): ProjectConfig {
   const raw = readFileSync(configFilePath, 'utf8')
-  const parsed = sheeterProjectFileSchema.parse(JSON.parse(raw))
+  const parsed = hermaProjectFileSchema.parse(JSON.parse(raw))
   const baseDir = configDirectory(configFilePath)
 
   const templatePath = resolvePathFromConfig(baseDir, parsed.template.path)

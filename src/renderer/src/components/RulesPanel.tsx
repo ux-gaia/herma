@@ -38,11 +38,12 @@ function describeRule(
         columns?.mode === 'header'
           ? (columns?.names ?? []).join(', ')
           : (columns?.columns ?? []).join(', ')
+      const invertPrefix = columns?.invert ? 'all except ' : ''
       const filterSuffix =
         filterCount > 0
           ? ' (' + filterCount + ' filter' + (filterCount === 1 ? '' : 's') + ')'
           : ''
-      return origin + ' → columns ' + columnList + filterSuffix + ' → ' + destination
+      return origin + ' → columns ' + invertPrefix + columnList + filterSuffix + ' → ' + destination
     }
     case 'rows':
       return (
@@ -144,7 +145,7 @@ export function RulesPanel(): React.JSX.Element {
   }
 
   return (
-    <section className="flex min-h-0 flex-1 flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <section className="glass-panel flex min-h-0 flex-1 flex-col p-4">
       <SectionHeader
         title="Rules"
         icon={ListChecks}
@@ -152,7 +153,7 @@ export function RulesPanel(): React.JSX.Element {
         action={
           <IconButton
             icon={Plus}
-            className="px-3 py-1.5 text-xs"
+            size="sm"
             onClick={openCreate}
             disabled={sourceFiles.length === 0}
           >
@@ -184,9 +185,9 @@ export function RulesPanel(): React.JSX.Element {
                   onDragOver={(event) => handleDragOver(event, rule.id)}
                   onDrop={(event) => handleDrop(event, rule.id)}
                   className={[
-                    'rounded-xl border bg-slate-50 px-3 py-3 text-sm text-slate-700 transition',
-                    isDragging ? 'border-slate-300 opacity-40' : 'border-slate-200',
-                    isDropTarget ? 'border-emerald-400 bg-emerald-50/60 ring-1 ring-emerald-200' : ''
+                    'glass-inset rounded-xl px-3 py-3 text-sm text-slate-700 transition',
+                    isDragging ? 'opacity-40' : '',
+                    isDropTarget ? 'glass-drop-target' : ''
                   ].join(' ')}
                 >
                   <div className="flex items-start justify-between gap-3">
@@ -202,7 +203,7 @@ export function RulesPanel(): React.JSX.Element {
                           onDragEnd={handleDragEnd}
                           title="Drag to reorder"
                           aria-label="Drag to reorder rule"
-                          className="cursor-grab rounded p-1 hover:bg-white active:cursor-grabbing"
+                          className="cursor-grab rounded p-1 hover:bg-white/50 active:cursor-grabbing"
                         >
                           <DragHandle />
                         </button>
@@ -218,7 +219,7 @@ export function RulesPanel(): React.JSX.Element {
                       <IconButton
                         icon={Pencil}
                         variant="ghost"
-                        className="px-2 py-1 text-xs"
+                        size="sm"
                         onClick={() => openEdit(rule)}
                       >
                         Edit
@@ -226,7 +227,8 @@ export function RulesPanel(): React.JSX.Element {
                       <IconButton
                         icon={Trash2}
                         variant="ghost"
-                        className="px-2 py-1 text-xs text-slate-400 hover:bg-red-50 hover:text-red-600"
+                        size="sm"
+                        className="text-slate-600 hover:border-red-200 hover:bg-red-50/90 hover:text-red-600"
                         onClick={() => removeMapping(rule.id)}
                       >
                         Remove

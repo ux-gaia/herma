@@ -211,6 +211,74 @@ function rowMatchesFilters(
   return true
 }
 
+function getSheetColumnCount(rows: unknown[][]): number {
+  let max = 0
+  for (const row of rows) {
+    max = Math.max(max, row.length)
+  }
+  return max
+}
+
+function resolveMatchedHeaderIndexes(
+  rows: unknown[][],
+  names: string[],
+  headerRow: number
+): number[] {
+  const header = rows[headerRow - 1]
+  if (!header) {
+    throw new Error(`Header row ${headerRow} was not found.`)
+  }
+
+  const matched = new Set<number>()
+
+  for (const name of names) {
+    const trimmed = name.trim()
+    if (!trimmed) {
+      continue
+    }
+
+    const indexes: number[] = []
+    header.forEach((cell, index) => {
+      if (String(cell).trim().toLowerCase() === trimmed.toLowerCase()) {
+        indexes.push(index + 1)
+      }
+    })
+
+    if (indexes.length === 0) {
+      throw new Error(`Column header "${name}" was not found.`)
+    }
+
+    for (const index of indexes) {
+      matched.add(index)
+    }
+  }
+
+  return [...matched].sort((left, right) => left - right)
+}
+
+function invertColumnIndexes(
+  rows: unknown[][],
+  excludedIndexes: number[],
+  ruleLabel: string
+): number[] {
+  const excluded = new Set(excludedIndexes)
+  const count = getSheetColumnCount(rows)
+
+  if (count === 0) {
+    throw new Error(`Rule "${ruleLabel}" cannot invert column selection on an empty sheet.`)
+  }
+
+  const included = Array.from({ length: count }, (_, index) => index + 1).filter(
+    (columnIndex) => !excluded.has(columnIndex)
+  )
+
+  if (included.length === 0) {
+    throw new Error(`Rule "${ruleLabel}" would copy no columns after inverting the selection.`)
+  }
+
+  return included
+}
+
 function resolveColumnIndexes(
   rows: unknown[][],
   selection: ColumnSelection,
@@ -222,11 +290,21 @@ function resolveColumnIndexes(
     if (!selection.columns?.length) {
       throw new Error(`Rule "${ruleLabel}" must specify at least one column index.`)
     }
+
+    if (selection.invert) {
+      return invertColumnIndexes(rows, selection.columns, ruleLabel)
+    }
+
     return selection.columns
   }
 
   if (!selection.names?.length) {
     throw new Error(`Rule "${ruleLabel}" must specify at least one column header.`)
+  }
+
+  if (selection.invert) {
+    const excluded = resolveMatchedHeaderIndexes(rows, selection.names, headerRow)
+    return invertColumnIndexes(rows, excluded, ruleLabel)
   }
 
   return selection.names.map((name) =>

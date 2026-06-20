@@ -47,5 +47,5 @@ export function ensureJsonExtension(filePath: string): string {
 }
 
 export function defaultConfigPath(configDir: string): string {
-  return join(configDir, 'sheeter.config.json')
+  return join(configDir, 'herma.config.json')
 }

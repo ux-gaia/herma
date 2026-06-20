@@ -1,7 +1,10 @@
-appId: com.sheeter.app
-productName: Sheeter
+appId: com.herma.app
+productName: Herma
 directories:
   buildResources: build
+extraResources:
+  - from: build/icon.png
+    to: icon.png
 files:
   - '!**/.vscode/*'
   - '!src/*'
@@ -10,13 +13,13 @@ files:
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
 win:
-  executableName: sheeter
+  executableName: herma
   target:
     - nsis
 nsis:
-  artifactName: sheeter-${version}-setup.${ext}
-  shortcutName: Sheeter
-  uninstallDisplayName: Sheeter
+  artifactName: herma-${version}-setup.${ext}
+  shortcutName: Herma
+  uninstallDisplayName: Herma
   createDesktopShortcut: always
 mac:
   category: public.app-category.productivity
@@ -25,13 +28,13 @@ mac:
     - zip
   notarize: false
 dmg:
-  artifactName: sheeter-${version}.${ext}
+  artifactName: herma-${version}.${ext}
 linux:
   target:
     - AppImage
     - deb
   category: Office
-  maintainer: Sheeter
+  maintainer: Herma
 appImage:
-  artifactName: sheeter-${version}.${ext}
+  artifactName: herma-${version}.${ext}
 npmRebuild: false

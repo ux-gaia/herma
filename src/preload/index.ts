@@ -14,7 +14,8 @@ import type {
   SourceFile
 } from '../shared/types/project'
 
-export interface SheeterAPI {
+export interface HermaAPI {
+  platform: NodeJS.Platform
   selectTemplate: () => Promise<ProjectTemplate | null>
   selectOutputDirectory: () => Promise<string | null>
   selectIterationFile: () => Promise<string | null>
@@ -44,29 +45,30 @@ export interface SheeterAPI {
   onCleanWorkspace: (callback: () => void) => () => void
 }
 
-const sheeter: SheeterAPI = {
-  selectTemplate: () => ipcRenderer.invoke('sheeter:select-template'),
-  selectOutputDirectory: () => ipcRenderer.invoke('sheeter:select-output-directory'),
-  selectIterationFile: () => ipcRenderer.invoke('sheeter:select-iteration-file'),
-  openFiles: () => ipcRenderer.invoke('sheeter:open-files'),
-  validateIterationSheet: (request) => ipcRenderer.invoke('sheeter:validate-iteration-sheet', request),
-  runAutomation: (request) => ipcRenderer.invoke('sheeter:run-automation', request),
-  previewSelection: (input) => ipcRenderer.invoke('sheeter:preview-selection', input),
-  exportWorkbook: (config) => ipcRenderer.invoke('sheeter:save-workbook', config),
-  exportProject: (config) => ipcRenderer.invoke('sheeter:export-project', config),
-  importProject: () => ipcRenderer.invoke('sheeter:import-project'),
+const herma: HermaAPI = {
+  platform: process.platform,
+  selectTemplate: () => ipcRenderer.invoke('herma:select-template'),
+  selectOutputDirectory: () => ipcRenderer.invoke('herma:select-output-directory'),
+  selectIterationFile: () => ipcRenderer.invoke('herma:select-iteration-file'),
+  openFiles: () => ipcRenderer.invoke('herma:open-files'),
+  validateIterationSheet: (request) => ipcRenderer.invoke('herma:validate-iteration-sheet', request),
+  runAutomation: (request) => ipcRenderer.invoke('herma:run-automation', request),
+  previewSelection: (input) => ipcRenderer.invoke('herma:preview-selection', input),
+  exportWorkbook: (config) => ipcRenderer.invoke('herma:save-workbook', config),
+  exportProject: (config) => ipcRenderer.invoke('herma:export-project', config),
+  importProject: () => ipcRenderer.invoke('herma:import-project'),
   onCleanWorkspace: (callback) => {
     const listener = (): void => callback()
-    ipcRenderer.on('sheeter:clean-workspace', listener)
+    ipcRenderer.on('herma:clean-workspace', listener)
     return () => {
-      ipcRenderer.removeListener('sheeter:clean-workspace', listener)
+      ipcRenderer.removeListener('herma:clean-workspace', listener)
     }
   }
 }
 
 if (process.contextIsolated) {
-  contextBridge.exposeInMainWorld('sheeter', sheeter)
+  contextBridge.exposeInMainWorld('herma', herma)
 } else {
   // @ts-ignore fallback for non-isolated contexts
-  window.sheeter = sheeter
+  window.herma = herma
 }

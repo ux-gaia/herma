@@ -55,6 +55,8 @@ export interface ColumnSelection {
   names?: string[]
   headerRow?: number
   filters?: ColumnFilter[]
+  /** When true, copy all columns except those matching the pattern. */
+  invert?: boolean
 }
 
 export interface RowSelection {
@@ -160,7 +162,7 @@ export interface ProjectConfig {
   automation?: import('./automation').AutomationConfig
 }
 
-export interface SheeterProjectFile {
+export interface HermaProjectFile {
   version: 1
   name?: string
   exportedAt: string

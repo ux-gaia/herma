@@ -23,13 +23,13 @@ export function ExportDialog({
   const statusIconClass = exporting
     ? 'text-slate-400 animate-spin'
     : successPath
-      ? 'text-emerald-600'
+      ? 'text-blue-600'
       : 'text-red-600'
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4">
-      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-        <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-900">
+    <div className="glass-overlay fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="glass-modal w-full max-w-md p-6">
+        <h3 className="flex items-center gap-2 text-base font-semibold text-slate-900">
           <StatusIcon className={`h-5 w-5 shrink-0 ${statusIconClass}`} strokeWidth={2} aria-hidden="true" />
           {exporting ? 'Exporting workbook…' : successPath ? 'Export complete' : 'Export failed'}
         </h3>
@@ -63,16 +63,12 @@ export function ExportDialog({
         )}
 
         {successPath && (
-          <p className="mt-4 break-all text-sm text-emerald-700">Saved to {successPath}</p>
+          <p className="mt-4 break-all text-sm text-blue-700">Saved to {successPath}</p>
         )}
 
         {!exporting && (
           <div className="mt-6 flex justify-end">
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
-            >
+            <button type="button" onClick={onClose} className="glass-button-primary">
               Close
             </button>
           </div>

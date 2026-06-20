@@ -8,14 +8,14 @@ export function TemplatePanel(): React.JSX.Element {
   const setTemplate = useProjectStore((state) => state.setTemplate)
 
   const handleSelectTemplate = async (): Promise<void> => {
-    const selected = await window.sheeter.selectTemplate()
+    const selected = await window.herma.selectTemplate()
     if (selected) {
       setTemplate(selected)
     }
   }
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <section className="glass-panel p-4">
       <SectionHeader
         title="Template"
         icon={LayoutTemplate}
@@ -41,7 +41,7 @@ export function TemplatePanel(): React.JSX.Element {
           {template.sheets.map((sheet) => (
             <span
               key={sheet.id}
-              className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600"
+              className="glass-chip px-3 py-1 text-xs"
             >
               {sheet.name}
             </span>

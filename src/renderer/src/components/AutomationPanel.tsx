@@ -60,7 +60,7 @@ export function AutomationPanel(): React.JSX.Element {
 
     setValidating(true)
     try {
-      const result = await window.sheeter.validateIterationSheet(buildValidationRequest())
+      const result = await window.herma.validateIterationSheet(buildValidationRequest())
       setValidation(result)
     } catch (error) {
       setValidation({
@@ -87,14 +87,14 @@ export function AutomationPanel(): React.JSX.Element {
   ])
 
   const handleSelectIterationFile = async (): Promise<void> => {
-    const filePath = await window.sheeter.selectIterationFile()
+    const filePath = await window.herma.selectIterationFile()
     if (filePath) {
       setAutomation({ iterationFilePath: filePath })
     }
   }
 
   const handleSelectOutputDirectory = async (): Promise<void> => {
-    const directory = await window.sheeter.selectOutputDirectory()
+    const directory = await window.herma.selectOutputDirectory()
     if (directory) {
       setAutomation({ outputDirectory: directory })
     }
@@ -123,7 +123,7 @@ export function AutomationPanel(): React.JSX.Element {
     setResultDialog({ running: true, result: null, errors: [] })
 
     try {
-      const result: AutomationRunResult = await window.sheeter.runAutomation({
+      const result: AutomationRunResult = await window.herma.runAutomation({
         ...buildValidationRequest(),
         outputDirectory: automation.outputDirectory
       })
@@ -146,8 +146,8 @@ export function AutomationPanel(): React.JSX.Element {
     !running
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto">
-      <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div className="theme-automation flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto">
+      <section className="glass-panel p-4">
         <SectionHeader
           title="Batch configuration"
           icon={Zap}
@@ -175,7 +175,7 @@ export function AutomationPanel(): React.JSX.Element {
             </div>
           </Field>
 
-          <div className="rounded-xl border border-slate-100 bg-slate-50 p-3 text-xs text-slate-600">
+          <div className="glass-inset p-3 text-xs text-slate-600">
             <p className="font-medium text-slate-700">Expected format</p>
             <table className="mt-2 w-full max-w-md border-collapse text-left">
               <thead>
@@ -238,14 +238,14 @@ export function AutomationPanel(): React.JSX.Element {
             />
           </Field>
 
-          <div className="rounded-xl border border-blue-100 bg-blue-50/50 p-3 text-sm text-slate-700">
+          <div className="glass-info p-3 text-sm text-slate-700">
             <button
               type="button"
               onClick={() => setShowPatternHelp((current) => !current)}
               className="flex w-full items-center justify-between gap-2 text-left font-medium text-slate-800"
             >
               <span className="flex items-center gap-2">
-                <CircleHelp className="h-4 w-4 shrink-0 text-blue-500" />
+                <CircleHelp className="text-accent h-4 w-4 shrink-0" />
                 How do output name patterns work?
               </span>
               <span className="text-slate-400">{showPatternHelp ? '−' : '+'}</span>
@@ -255,16 +255,16 @@ export function AutomationPanel(): React.JSX.Element {
               <div className="mt-3 space-y-3 text-xs text-slate-600">
                 <p>
                   Define how each generated file will be named. Use{' '}
-                  <code className="rounded bg-white px-1">{`{CONSTANT_NAME}`}</code> to insert the
+                  <code className="rounded bg-white/50 px-1">{`{CONSTANT_NAME}`}</code> to insert the
                   value of that constant for the iteration. The{' '}
-                  <code className="rounded bg-white px-1">.xlsx</code> extension is added
+                  <code className="rounded bg-white/50 px-1">.xlsx</code> extension is added
                   automatically.
                 </p>
                 <p>If you leave the pattern empty, files are named sequentially:</p>
                 <p>
-                  <code className="rounded bg-white px-1">1.xlsx</code>,{' '}
-                  <code className="rounded bg-white px-1">2.xlsx</code>,{' '}
-                  <code className="rounded bg-white px-1">3.xlsx</code>…
+                  <code className="rounded bg-white/50 px-1">1.xlsx</code>,{' '}
+                  <code className="rounded bg-white/50 px-1">2.xlsx</code>,{' '}
+                  <code className="rounded bg-white/50 px-1">3.xlsx</code>…
                 </p>
                 <table className="w-full max-w-lg border-collapse text-left">
                   <thead>
@@ -320,11 +320,11 @@ export function AutomationPanel(): React.JSX.Element {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <section className="glass-panel p-4">
         <SectionHeader
           title="Validation preview"
           icon={ClipboardCheck}
-          help="Check each iteration row before running. Sheeter validates required columns, non-empty values, and resolved output filenames so you can fix the spreadsheet before exporting."
+          help="Check each iteration row before running. Herma validates required columns, non-empty values, and resolved output filenames so you can fix the spreadsheet before exporting."
           action={validating ? <span className="text-xs text-slate-400">Validating…</span> : undefined}
         />
 
@@ -379,7 +379,7 @@ export function AutomationPanel(): React.JSX.Element {
                         </td>
                         <td className="border-b border-slate-100 px-2 py-2 text-xs">
                           {row.valid ? (
-                            <span className="text-emerald-700">Ready</span>
+                            <span className="text-accent">Ready</span>
                           ) : (
                             <span className="text-red-600">{row.errors.join(' ')}</span>
                           )}

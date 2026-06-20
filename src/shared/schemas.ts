@@ -51,7 +51,8 @@ export const columnSelectionSchema = z.object({
   columns: z.array(z.number().int().positive()).optional(),
   names: z.array(z.string()).optional(),
   headerRow: z.number().int().positive().optional(),
-  filters: z.array(columnFilterSchema).optional()
+  filters: z.array(columnFilterSchema).optional(),
+  invert: z.boolean().optional()
 })
 
 export const rowSelectionSchema = z.object({
@@ -141,7 +142,7 @@ export const exportWorkbookConfigSchema = z.object({
   mappings: z.array(copyRuleSchema).min(1)
 })
 
-export const sheeterProjectFileSchema = z.object({
+export const hermaProjectFileSchema = z.object({
   version: z.literal(1),
   name: z.string().optional(),
   exportedAt: z.string(),

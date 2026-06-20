@@ -1,8 +1,8 @@
-import type { SheeterAPI } from './index'
+import type { HermaAPI } from './index'
 
 declare global {
   interface Window {
-    sheeter: SheeterAPI
+    herma: HermaAPI
   }
 }
 

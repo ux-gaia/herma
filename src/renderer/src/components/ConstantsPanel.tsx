@@ -36,7 +36,7 @@ export function ConstantsPanel(): React.JSX.Element {
   }
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <section className="glass-panel p-4">
       <SectionHeader
         title="Constants"
         icon={Variable}
@@ -56,7 +56,7 @@ export function ConstantsPanel(): React.JSX.Element {
           onChange={(event) => setValue(event.target.value)}
           placeholder='Value (e.g. "Zapatos")'
         />
-        <IconButton icon={Plus} variant="default" className="bg-slate-900 text-white hover:bg-slate-800" onClick={handleAdd}>
+        <IconButton icon={Plus} variant="primary" onClick={handleAdd}>
           Add
         </IconButton>
       </div>
@@ -66,7 +66,7 @@ export function ConstantsPanel(): React.JSX.Element {
       {constants.length === 0 ? (
         <p className="text-sm text-slate-500">Define reusable values for column filters.</p>
       ) : (
-        <ul className="divide-y divide-slate-100 rounded-xl border border-slate-100">
+        <ul className="divide-y divide-white/40 rounded-xl border border-white/45">
           {constants.map((constant) => (
             <li key={constant.id} className="flex items-center gap-2 px-3 py-2">
               <div className="relative w-40">
@@ -74,7 +74,7 @@ export function ConstantsPanel(): React.JSX.Element {
                 <input
                   value={constant.name}
                   onChange={(event) => updateConstant(constant.id, { name: event.target.value })}
-                  className="w-full rounded-md border border-slate-200 py-1 pl-7 pr-2 text-sm"
+                  className="glass-input w-full py-1 pl-7 pr-2 text-sm"
                 />
               </div>
               <span className="text-slate-400">=</span>
@@ -85,13 +85,13 @@ export function ConstantsPanel(): React.JSX.Element {
                   onChange={(event) =>
                     updateConstant(constant.id, { value: parseConstantValue(event.target.value) })
                   }
-                  className="w-full rounded-md border border-slate-200 py-1 pl-7 pr-2 text-sm"
+                  className="glass-input w-full py-1 pl-7 pr-2 text-sm"
                 />
               </div>
               <button
                 type="button"
                 onClick={() => removeConstant(constant.id)}
-                className="rounded-md px-2 py-1 text-xs text-slate-400 hover:bg-red-50 hover:text-red-600"
+                className="glass-button-ghost glass-button-sm text-slate-600 hover:border-red-200 hover:bg-red-50/90 hover:text-red-600"
               >
                 Remove
               </button>
