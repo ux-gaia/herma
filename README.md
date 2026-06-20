@@ -14,12 +14,16 @@
 
 Built with **Electron**, **React**, and **TypeScript**.
 
-## Downloads
+## Download
 
-Pre-built installers for **v1.0.0**:
+Installers for **v1.0.0**:
 
-| Platform | File | Notes |
-| -------- | ---- | ----- |
+- [macOS — DMG (Apple Silicon)](releases/herma-1.0.0-macos-arm64.dmg)
+- [macOS — ZIP (Apple Silicon)](releases/herma-1.0.0-macos-arm64.zip)
+- [Windows — Installer 64-bit](releases/herma-1.0.0-windows-x64-setup.exe)
+
+| Platform | Download | Notes |
+| -------- | -------- | ----- |
 | macOS (Apple Silicon) | [DMG](releases/herma-1.0.0-macos-arm64.dmg) · [ZIP](releases/herma-1.0.0-macos-arm64.zip) | M1/M2/M3 Macs |
 | Windows (64-bit) | [Installer (.exe)](releases/herma-1.0.0-windows-x64-setup.exe) | Windows 10/11 |
 
