@@ -1,0 +1,37 @@
+appId: com.sheeter.app
+productName: Sheeter
+directories:
+  buildResources: build
+files:
+  - '!**/.vscode/*'
+  - '!src/*'
+  - '!electron.vite.config.{js,ts,mjs,cjs}'
+  - '!{.eslintcache,eslint.config.mjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
+  - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
+  - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+win:
+  executableName: sheeter
+  target:
+    - nsis
+nsis:
+  artifactName: sheeter-${version}-setup.${ext}
+  shortcutName: Sheeter
+  uninstallDisplayName: Sheeter
+  createDesktopShortcut: always
+mac:
+  category: public.app-category.productivity
+  target:
+    - dmg
+    - zip
+  notarize: false
+dmg:
+  artifactName: sheeter-${version}.${ext}
+linux:
+  target:
+    - AppImage
+    - deb
+  category: Office
+  maintainer: Sheeter
+appImage:
+  artifactName: sheeter-${version}.${ext}
+npmRebuild: false
