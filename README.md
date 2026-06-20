@@ -14,6 +14,35 @@
 
 Built with **Electron**, **React**, and **TypeScript**.
 
+## Downloads
+
+Pre-built installers for **v1.0.0**:
+
+| Platform | File | Notes |
+| -------- | ---- | ----- |
+| macOS (Apple Silicon) | [DMG](releases/herma-1.0.0-macos-arm64.dmg) · [ZIP](releases/herma-1.0.0-macos-arm64.zip) | M1/M2/M3 Macs |
+| Windows (64-bit) | [Installer (.exe)](releases/herma-1.0.0-windows-x64-setup.exe) | Windows 10/11 |
+
+### Install notes
+
+- **macOS:** Open the DMG, drag Herma to Applications. On first launch, macOS may block the app because it is not notarized — use **Right click → Open** if needed.
+- **Windows:** Run the installer. SmartScreen may warn for unsigned apps — choose **More info → Run anyway** if prompted.
+
+To rebuild installers locally:
+
+```bash
+npm run build:mac    # macOS (builds for the current Mac architecture)
+npm run build:win    # Windows
+```
+
+Then copy artifacts from `dist/` into `releases/`:
+
+```bash
+npm run release:copy
+```
+
+Release binaries are stored with **Git LFS** (GitHub’s 100 MB file limit). After cloning, run `git lfs pull` if the downloads are missing.
+
 ## Features
 
 ### Configuration
