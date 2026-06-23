@@ -70,7 +70,7 @@ export function ConstantsPanel(): React.JSX.Element {
           {constants.map((constant) => (
             <li key={constant.id} className="flex items-center gap-2 px-3 py-2">
               <div className="relative w-40">
-                <Tag className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
+                <Tag className="input-icon pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2" strokeWidth={2} />
                 <input
                   value={constant.name}
                   onChange={(event) => updateConstant(constant.id, { name: event.target.value })}
@@ -79,7 +79,7 @@ export function ConstantsPanel(): React.JSX.Element {
               </div>
               <span className="text-slate-400">=</span>
               <div className="relative min-w-0 flex-1">
-                <Variable className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
+                <Variable className="input-icon pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2" strokeWidth={2} />
                 <input
                   value={String(constant.value)}
                   onChange={(event) =>

@@ -8,6 +8,7 @@ import {
   Zap
 } from 'lucide-react'
 import { validateExportWorkbookConfig } from '../../shared/validation'
+import appIcon from './assets/app-icon.png'
 import { AutomationPanel } from './components/AutomationPanel'
 import { ConstantsPanel } from './components/ConstantsPanel'
 import { ExportDialog } from './components/ExportDialog'
@@ -133,11 +134,9 @@ export default function App(): React.JSX.Element {
         <header className="app-chrome-header flex items-center justify-between px-6 py-3">
           <div className="app-chrome-brand flex items-center gap-4">
             <img
-              src="/icon.png"
+              src={appIcon}
               alt=""
               className="app-chrome-mark"
-              width={56}
-              height={56}
               draggable={false}
             />
             <div>

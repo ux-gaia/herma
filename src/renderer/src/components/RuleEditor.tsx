@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import {
   Columns3,
   FileSpreadsheet,
@@ -31,6 +32,7 @@ import {
   createDefaultSourceSelection,
   useProjectStore
 } from '../store/useProjectStore'
+import { useDebouncedValue } from '../hooks/useDebouncedValue'
 import { SelectionPreviewPanel } from './SelectionPreviewPanel'
 import { Field } from './ui/Field'
 import { IconButton } from './ui/IconButton'
@@ -117,42 +119,74 @@ export function RuleEditor({ rule, onClose }: RuleEditorProps): React.JSX.Elemen
     [sourceSheetId, sheetsForFile]
   )
 
+  const previewSelectionInputs = useMemo(
+    () => ({
+      sourceFileId,
+      sourceSheetId,
+      kind,
+      columnMode,
+      columnIndexes,
+      columnNames,
+      headerRow,
+      invertColumns,
+      useFilters,
+      filters,
+      startRow,
+      endRow,
+      startCol,
+      blockStartRow,
+      endCol,
+      blockEndRow
+    }),
+    [
+      sourceFileId,
+      sourceSheetId,
+      kind,
+      columnMode,
+      columnIndexes,
+      columnNames,
+      headerRow,
+      invertColumns,
+      useFilters,
+      filters,
+      startRow,
+      endRow,
+      startCol,
+      blockStartRow,
+      endCol,
+      blockEndRow
+    ]
+  )
+
+  const debouncedPreviewInputs = useDebouncedValue(previewSelectionInputs, 500)
+
+  useEffect(() => {
+    setPreview(null)
+  }, [sourceFileId, sourceSheetId, kind])
+
   useEffect(() => {
     if (ruleType !== 'copy' || !sourceFile || !sourceSheet) {
       setPreview(null)
       return
     }
 
-    const timer = window.setTimeout(async () => {
+    let cancelled = false
+
+    void (async () => {
       let selection: SourceSelection
       try {
-        selection = buildSourceSelection(
-          {
-            sourceFileId,
-            sourceSheetId,
-            kind,
-            columnMode,
-            columnIndexes,
-            columnNames,
-            headerRow,
-            invertColumns,
-            useFilters,
-            filters,
-            startRow,
-            endRow,
-            startCol,
-            blockStartRow,
-            endCol,
-            blockEndRow
-          },
-          { forPreview: true }
-        )
+        selection = buildSourceSelection(debouncedPreviewInputs, { forPreview: true })
       } catch {
-        setPreview({ error: 'Enter valid selection values to preview the first cell.' })
+        if (!cancelled) {
+          setPreview({ error: 'Enter valid selection values to preview the first cell.' })
+        }
         return
       }
 
-      setPreviewLoading(true)
+      if (!cancelled) {
+        setPreviewLoading(true)
+      }
+
       try {
         const result = await window.herma.previewSelection({
           filePath: sourceFile.path,
@@ -161,35 +195,20 @@ export function RuleEditor({ rule, onClose }: RuleEditorProps): React.JSX.Elemen
           selection,
           constants
         })
-        setPreview(result)
+        if (!cancelled) {
+          setPreview(result)
+        }
       } finally {
-        setPreviewLoading(false)
+        if (!cancelled) {
+          setPreviewLoading(false)
+        }
       }
-    }, 300)
+    })()
 
-    return () => window.clearTimeout(timer)
-  }, [
-    ruleType,
-    sourceFile,
-    sourceSheet,
-    sourceFileId,
-    sourceSheetId,
-    kind,
-    columnMode,
-    columnIndexes,
-    columnNames,
-    headerRow,
-    invertColumns,
-    useFilters,
-    filters,
-    startRow,
-    endRow,
-    startCol,
-    blockStartRow,
-    endCol,
-    blockEndRow,
-    constants
-  ])
+    return () => {
+      cancelled = true
+    }
+  }, [ruleType, sourceFile, sourceSheet, debouncedPreviewInputs, constants])
 
   const handleTemplateSheetChange = (sheetId: string): void => {
     setTemplateSheetId(sheetId)
@@ -299,9 +318,9 @@ export function RuleEditor({ rule, onClose }: RuleEditorProps): React.JSX.Elemen
     ])
   }
 
-  return (
-    <div className="glass-overlay fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="glass-modal max-h-[90vh] w-full max-w-2xl overflow-y-auto p-6">
+  return createPortal(
+    <div className="glass-overlay fixed inset-0 z-50 flex items-center justify-center">
+      <div className="glass-modal h-[80vh] w-[80vw] overflow-y-auto p-6">
         <h3 className="text-base font-semibold text-slate-900">{editorTitle}</h3>
 
         <div className="mt-4 space-y-4">
@@ -521,7 +540,11 @@ export function RuleEditor({ rule, onClose }: RuleEditorProps): React.JSX.Elemen
           )}
 
           {(kind === 'columns' || kind === 'rows' || kind === 'block' || kind === 'sheet') && (
-            <SelectionPreviewPanel loading={previewLoading} preview={preview} />
+            <SelectionPreviewPanel
+              loading={previewLoading && preview === null}
+              refreshing={previewLoading && preview !== null}
+              preview={preview}
+            />
           )}
 
           <div className="grid grid-cols-1 gap-3 glass-accent-inset p-4 md:grid-cols-3">
@@ -603,7 +626,8 @@ export function RuleEditor({ rule, onClose }: RuleEditorProps): React.JSX.Elemen
           </IconButton>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
 

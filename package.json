@@ -1,5 +1,6 @@
 {
   "name": "herma",
+  "productName": "Herma",
   "version": "1.0.0",
   "description": "Consolidate spreadsheets into a single Excel workbook",
   "main": "./out/main/index.js",

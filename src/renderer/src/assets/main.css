@@ -11,42 +11,40 @@
   --glass-shadow-lg: 0 24px 64px rgba(15, 23, 42, 0.16);
   --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.9);
   --glass-blur: blur(28px) saturate(180%);
-  --accent: #0066dd;
-  --accent-hover: #0055b3;
-  --accent-soft: rgba(0, 102, 221, 0.14);
-  --accent-glow: 0 4px 16px rgba(0, 102, 221, 0.35);
-  --accent-border: rgba(0, 70, 160, 0.55);
-  --accent-border-hover: rgba(0, 70, 160, 0.65);
-  --accent-gradient-from: #0077ed;
-  --accent-gradient-to: #0066dd;
-  --accent-gradient-hover-from: #0084ff;
-  --accent-gradient-hover-to: #0070e8;
-  --accent-text-shadow: rgba(0, 40, 100, 0.25);
-  --focus-border: rgba(0, 102, 221, 0.55);
-  --focus-ring: rgba(0, 102, 221, 0.16);
-  --info-border: rgba(0, 102, 221, 0.28);
-  --info-bg: rgba(0, 102, 221, 0.1);
+  --accent: #2baa9a;
+  --accent-light: #7cc7bd;
+  --accent-hover: #7cc7bd;
+  --accent-soft: rgba(124, 199, 189, 0.18);
+  --accent-glow: 0 4px 16px rgba(43, 170, 154, 0.35);
+  --accent-border: rgba(43, 170, 154, 0.55);
+  --accent-border-hover: rgba(124, 199, 189, 0.75);
+  --accent-gradient-from: #7cc7bd;
+  --accent-gradient-to: #2baa9a;
+  --accent-gradient-hover-from: #94d4cb;
+  --accent-gradient-hover-to: #7cc7bd;
+  --focus-border: rgba(43, 170, 154, 0.55);
+  --focus-ring: rgba(43, 170, 154, 0.16);
+  --info-border: rgba(124, 199, 189, 0.45);
+  --info-bg: rgba(124, 199, 189, 0.12);
   --text-primary: rgba(15, 23, 42, 0.95);
   --text-secondary: rgba(30, 41, 59, 0.82);
   --text-muted: rgba(51, 65, 85, 0.78);
+  --input-icon: #bbb;
   --control-bg: rgba(255, 255, 255, 0.88);
   --control-bg-hover: rgba(255, 255, 255, 0.96);
   --control-border: rgba(15, 23, 42, 0.14);
   --control-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
-  --btn-pad-x: 8px;
+  --btn-pad-x: 16px;
   --btn-pad-y: 6px;
-  --btn-pad-x-sm: 6px;
+  --btn-pad-x-sm: 12px;
   --btn-pad-y-sm: 4px;
-  --btn-pad-x-tab: 12px;
+  --btn-pad-x-tab: 24px;
   --btn-gap: 6px;
   --btn-font-size: 13px;
   --btn-font-size-sm: 12px;
 
   font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    'SF Pro Display',
-    'SF Pro Text',
+    'Montserrat',
     system-ui,
     sans-serif;
   line-height: 1.5;
@@ -72,10 +70,10 @@ body,
 
 body {
   background:
-    radial-gradient(ellipse 90% 60% at 10% 0%, rgba(147, 197, 253, 0.45), transparent 55%),
-    radial-gradient(ellipse 70% 50% at 95% 15%, rgba(196, 181, 253, 0.38), transparent 50%),
+    radial-gradient(ellipse 90% 60% at 10% 0%, rgba(124, 199, 189, 0.42), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 95% 15%, rgba(43, 170, 154, 0.22), transparent 50%),
     radial-gradient(ellipse 80% 55% at 50% 100%, rgba(254, 215, 170, 0.32), transparent 55%),
-    linear-gradient(160deg, #dbeafe 0%, #ede9fe 38%, #e0f2fe 68%, #fef3c7 100%);
+    linear-gradient(160deg, #e8f7f5 0%, #edf8f6 38%, #e3f5f2 68%, #fef3c7 100%);
   background-attachment: fixed;
 }
 
@@ -195,6 +193,8 @@ select {
   .glass-button-ghost {
     font-size: var(--btn-font-size);
     font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
   }
 
   .glass-button-sm {
@@ -250,15 +250,12 @@ select {
       var(--control-shadow),
       inset 0 1px 0 rgba(255, 255, 255, 0.32);
     color: #ffffff;
-    text-shadow: 0 1px 1px var(--accent-text-shadow);
   }
 
   .glass-button-primary:hover:not(:disabled) {
-    background: linear-gradient(
-      180deg,
-      var(--accent-gradient-hover-from) 0%,
-      var(--accent-gradient-hover-to) 100%
-    );
+    background: linear-gradient(180deg,
+        var(--accent-gradient-hover-from) 0%,
+        var(--accent-gradient-hover-to) 100%);
     border-color: var(--accent-border-hover);
   }
 
@@ -308,6 +305,8 @@ select {
     border-radius: 8px;
     color: var(--text-muted);
     font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
     transition:
       background-color 0.15s ease,
       color 0.15s ease,
@@ -370,6 +369,25 @@ select {
     color: var(--accent);
   }
 
+  .text-accent-light {
+    color: var(--accent-light);
+  }
+
+  .input-icon {
+    z-index: 10;
+    color: var(--input-icon);
+    stroke: currentColor;
+  }
+
+  .help-tooltip-trigger:hover,
+  .help-tooltip-trigger:focus-visible {
+    color: var(--accent);
+  }
+
+  .help-tooltip-trigger:focus-visible {
+    box-shadow: 0 0 0 2px var(--focus-ring);
+  }
+
   .main-automation {
     background:
       radial-gradient(ellipse 90% 60% at 10% 0%, rgba(253, 230, 200, 0.35), transparent 60%),
@@ -392,7 +410,6 @@ select {
     --accent-gradient-to: #ea580c;
     --accent-gradient-hover-from: #fdba74;
     --accent-gradient-hover-to: #f97316;
-    --accent-text-shadow: rgba(120, 40, 0, 0.28);
     --focus-border: rgba(234, 88, 12, 0.45);
     --focus-ring: rgba(234, 88, 12, 0.12);
     --info-border: rgba(251, 191, 136, 0.35);
@@ -416,10 +433,10 @@ select {
   }
 
   .glass-drop-target {
-    border-color: rgba(0, 102, 221, 0.5) !important;
-    background: rgba(0, 102, 221, 0.14) !important;
+    border-color: var(--accent-border) !important;
+    background: var(--accent-soft) !important;
     box-shadow:
-      0 0 0 1px rgba(0, 102, 221, 0.22),
+      0 0 0 1px rgba(43, 170, 154, 0.22),
       var(--control-shadow),
       var(--glass-highlight);
   }
@@ -472,13 +489,9 @@ select {
 .app-chrome-mark {
   width: 56px;
   height: 56px;
-  border-radius: 14px;
   flex-shrink: 0;
   pointer-events: none;
   user-select: none;
-  box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.08),
-    0 0 0 1px rgba(15, 23, 42, 0.04);
 }
 
 .platform-darwin .app-chrome-titlebar,

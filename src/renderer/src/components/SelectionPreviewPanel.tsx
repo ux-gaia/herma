@@ -2,19 +2,26 @@ import type { SelectionPreview } from '../../../shared/types/project'
 
 interface SelectionPreviewPanelProps {
   loading: boolean
+  refreshing?: boolean
   preview: SelectionPreview | { error: string } | null
 }
 
 export function SelectionPreviewPanel({
   loading,
+  refreshing = false,
   preview
 }: SelectionPreviewPanelProps): React.JSX.Element {
   return (
     <section className="glass-info p-4">
-      <h4 className="text-xs font-semibold uppercase tracking-wide text-blue-700">
-        Selection preview
-      </h4>
-      <p className="mt-1 text-xs text-blue-600/80">
+      <div className="flex items-center justify-between gap-2">
+        <h4 className="text-accent text-xs font-semibold uppercase tracking-wide">
+          Selection preview
+        </h4>
+        {refreshing && (
+          <span className="text-xs text-slate-400">Updating…</span>
+        )}
+      </div>
+      <p className="text-accent-light mt-1 text-xs opacity-80">
         Sample of the selected cells (up to 2×2 when available).
       </p>
 

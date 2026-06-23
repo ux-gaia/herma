@@ -10,7 +10,7 @@ export function HelpTooltip({ text }: HelpTooltipProps): React.JSX.Element {
       <button
         type="button"
         tabIndex={0}
-        className="help-tooltip-trigger cursor-help rounded-full text-slate-400 hover:text-blue-500 focus:outline-none focus-visible:text-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500/30"
+        className="help-tooltip-trigger cursor-help rounded-full text-slate-400 focus:outline-none"
         aria-label={text}
       >
         <CircleHelp className="h-3.5 w-3.5" strokeWidth={2} aria-hidden="true" />

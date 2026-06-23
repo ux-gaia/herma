@@ -5,6 +5,10 @@ import { resolveAppIconPath } from './icon'
 import { registerIpcHandlers } from './ipc/handlers'
 import { createApplicationMenu } from './menu'
 
+const APP_NAME = 'Herma'
+
+app.setName(APP_NAME)
+
 let mainWindow: BrowserWindow | null = null
 
 const CHROME_BACKGROUND = '#f4f6fb'
@@ -19,7 +23,7 @@ function getWindowOptions(): BrowserWindowConstructorOptions {
     minHeight: 600,
     show: false,
     autoHideMenuBar: false,
-    title: 'Herma',
+    title: APP_NAME,
     backgroundColor: CHROME_BACKGROUND,
     ...(appIconPath && appIcon && !appIcon.isEmpty() ? { icon: appIconPath } : {}),
     webPreferences: {

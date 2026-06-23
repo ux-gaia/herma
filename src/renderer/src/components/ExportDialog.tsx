@@ -23,7 +23,7 @@ export function ExportDialog({
   const statusIconClass = exporting
     ? 'text-slate-400 animate-spin'
     : successPath
-      ? 'text-blue-600'
+      ? 'text-accent'
       : 'text-red-600'
 
   return (
@@ -63,7 +63,7 @@ export function ExportDialog({
         )}
 
         {successPath && (
-          <p className="mt-4 break-all text-sm text-blue-700">Saved to {successPath}</p>
+          <p className="text-accent mt-4 break-all text-sm">Saved to {successPath}</p>
         )}
 
         {!exporting && (
