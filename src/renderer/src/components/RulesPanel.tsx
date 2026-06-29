@@ -16,7 +16,10 @@ function describeRule(
     const fileName = rule.resultSheetName.toLowerCase().endsWith('.xlsx')
       ? rule.resultSheetName
       : `${rule.resultSheetName}.xlsx`
-    return `All imported sheets → "${fileName}" in ${rule.outputDirectory || '?'}`
+    const originHint = rule.originColumn?.enabled
+      ? ` · origin column "${rule.originColumn.header}"`
+      : ''
+    return `Sheets grouped by tab name${originHint} → "${fileName}" in ${rule.outputDirectory || '?'}`
   }
 
   if (!isCopySelectionRule(rule)) {

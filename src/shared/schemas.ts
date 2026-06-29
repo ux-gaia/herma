@@ -90,6 +90,14 @@ export const copySelectionRuleSchema = z.object({
   destination: destinationPlacementSchema
 })
 
+export const mergeOriginColumnSchema = z.object({
+  enabled: z.boolean(),
+  header: z.string(),
+  mode: z.enum(['fixed', 'filename', 'regex']),
+  fixedValue: z.string().optional(),
+  regex: z.string().optional()
+})
+
 export const mergeSheetsRuleSchema = z.object({
   ruleType: z.literal('merge_sheets'),
   id: z.string(),
@@ -97,7 +105,8 @@ export const mergeSheetsRuleSchema = z.object({
   resultSheetName: z.string().min(1),
   outputDirectory: z.string(),
   skipHeadersAfterFirst: z.boolean(),
-  headerRow: z.number().int().positive()
+  headerRow: z.number().int().positive(),
+  originColumn: mergeOriginColumnSchema.optional()
 })
 
 export const copyRuleSchema = z.preprocess((value) => {

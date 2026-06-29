@@ -2,7 +2,7 @@ import { join } from 'path'
 import ExcelJS from 'exceljs'
 import type { MergeSheetsRule, SourceFile } from '../../shared/types/project'
 import { toExcelCellValue } from './cell-value'
-import { extractMergeSheetsData } from './merge-sheets'
+import { extractMergeSheetsByTabName } from './merge-sheets'
 
 const INVALID_SHEET_CHARS = /[[\]:*?/\\]/g
 
@@ -15,8 +15,7 @@ function ensureXlsxFileName(name: string): string {
 }
 
 function sanitizeSheetTabName(name: string): string {
-  const withoutExtension = name.replace(/\.xlsx$/i, '').trim()
-  return withoutExtension.replace(INVALID_SHEET_CHARS, '_').slice(0, 31) || 'Merged'
+  return name.replace(INVALID_SHEET_CHARS, '_').slice(0, 31) || 'Merged'
 }
 
 function pasteValues(
@@ -50,10 +49,13 @@ export async function writeMergeSheetsOutputs(
     const fileName = ensureXlsxFileName(rule.resultSheetName)
     const outputPath = join(rule.outputDirectory, fileName)
     const workbook = new ExcelJS.Workbook()
-    const worksheet = workbook.addWorksheet(sanitizeSheetTabName(rule.resultSheetName))
-    const values = extractMergeSheetsData(rule, sourceFiles)
+    const tabs = extractMergeSheetsByTabName(rule, sourceFiles)
 
-    pasteValues(worksheet, 1, 1, values)
+    for (const { tabName, rows } of tabs) {
+      const worksheet = workbook.addWorksheet(sanitizeSheetTabName(tabName))
+      pasteValues(worksheet, 1, 1, rows)
+    }
+
     await workbook.xlsx.writeFile(outputPath)
     written.push(outputPath)
   }

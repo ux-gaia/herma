@@ -9,7 +9,8 @@
   "engines": {
     "node": ">=20.19.0"
   },
-  "overrides": {
+  "packageManager": "yarn@1.22.22",
+  "resolutions": {
     "@noble/hashes": "1.8.0"
   },
   "scripts": {
@@ -17,16 +18,16 @@
     "lint": "eslint --cache .",
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
-    "typecheck": "npm run typecheck:node && npm run typecheck:web",
+    "typecheck": "yarn typecheck:node && yarn typecheck:web",
     "start": "electron-vite preview",
     "dev": "electron-vite dev",
-    "build": "npm run typecheck && electron-vite build",
+    "build": "yarn typecheck && electron-vite build",
     "postinstall": "electron-builder install-app-deps",
-    "package": "npm run build && electron-builder --mac --win --linux",
-    "build:unpack": "npm run build && electron-builder --dir",
-    "build:win": "npm run build && electron-builder --win",
-    "build:mac": "npm run build && electron-builder --mac",
-    "build:linux": "npm run build && electron-builder --linux",
+    "package": "yarn build && electron-builder --mac --win --linux",
+    "build:unpack": "yarn build && electron-builder --dir",
+    "build:win": "yarn build && electron-builder --win",
+    "build:mac": "yarn build && electron-builder --mac",
+    "build:linux": "yarn build && electron-builder --linux",
     "icons": "bash scripts/generate-icons.sh",
     "release:copy": "bash scripts/copy-releases.sh"
   },

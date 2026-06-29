@@ -35,14 +35,14 @@ Installers for **v1.0.0**:
 To rebuild installers locally:
 
 ```bash
-npm run build:mac    # macOS (builds for the current Mac architecture)
-npm run build:win    # Windows
+yarn build:mac    # macOS (builds for the current Mac architecture)
+yarn build:win    # Windows
 ```
 
 Then copy artifacts from `dist/` into `releases/`:
 
 ```bash
-npm run release:copy
+yarn release:copy
 ```
 
 Release binaries are stored with **Git LFS** (GitHub’s 100 MB file limit). After cloning, run `git lfs pull` if the downloads are missing.
@@ -74,25 +74,25 @@ Release binaries are stored with **Git LFS** (GitHub’s 100 MB file limit). Aft
 ### Requirements
 
 - [Node.js](https://nodejs.org/) 20.19 or later
-- npm
+- [Yarn](https://yarnpkg.com/) 1.22+
 
 ### Development
 
 ```bash
 git clone https://github.com/herma/herma.git
 cd herma
-npm install
-npm run dev
+yarn install
+yarn dev
 ```
 
 ### Build
 
 ```bash
-npm run build          # Compile the app
-npm run build:mac      # macOS installer (.dmg / .zip)
-npm run build:win      # Windows installer (.exe)
-npm run build:linux    # Linux packages (AppImage / .deb)
-npm run package        # All platforms
+yarn build          # Compile the app
+yarn build:mac      # macOS installer (.dmg / .zip)
+yarn build:win      # Windows installer (.exe)
+yarn build:linux    # Linux packages (AppImage / .deb)
+yarn package        # All platforms
 ```
 
 ### Icons
@@ -100,7 +100,7 @@ npm run package        # All platforms
 After updating `herma.png`, regenerate platform icons:
 
 ```bash
-npm run icons
+yarn icons
 ```
 
 ## Project structure

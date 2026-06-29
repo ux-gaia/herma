@@ -141,6 +141,30 @@ function validateMergeSheetsRule(
     )
   }
 
+  const originColumn = rule.originColumn
+  if (originColumn?.enabled) {
+    if (!originColumn.header.trim()) {
+      errors.push(`Merge rule "${ruleLabel}" must specify an origin column header.`)
+    }
+
+    if (originColumn.mode === 'fixed' && originColumn.fixedValue === undefined) {
+      errors.push(`Merge rule "${ruleLabel}" must specify a fixed origin column value.`)
+    }
+
+    if (originColumn.mode === 'regex') {
+      if (!originColumn.regex?.trim()) {
+        errors.push(`Merge rule "${ruleLabel}" must specify a regex pattern for the origin column.`)
+      } else {
+        try {
+          // eslint-disable-next-line no-new
+          new RegExp(originColumn.regex)
+        } catch {
+          errors.push(`Merge rule "${ruleLabel}" has an invalid origin column regex.`)
+        }
+      }
+    }
+  }
+
   return errors
 }
 

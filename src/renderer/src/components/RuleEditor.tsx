@@ -13,7 +13,8 @@ import {
   MousePointerClick,
   Rows3,
   Sheet,
-  Tag
+  Tag,
+  Tags
 } from 'lucide-react'
 import type {
   ColumnFilter,
@@ -21,6 +22,8 @@ import type {
   CopyRule,
   CopyRuleType,
   FilterValue,
+  MergeOriginColumnMode,
+  MergeSheetsRule,
   SelectionKind,
   SelectionPreview,
   SourceSelection
@@ -95,6 +98,19 @@ export function RuleEditor({ rule, onClose }: RuleEditorProps): React.JSX.Elemen
   const [outputDirectory, setOutputDirectory] = useState(
     mergeRule?.outputDirectory ?? defaultMergeRule.outputDirectory
   )
+  const [originColumnEnabled, setOriginColumnEnabled] = useState(
+    mergeRule?.originColumn?.enabled ?? false
+  )
+  const [originColumnHeader, setOriginColumnHeader] = useState(
+    mergeRule?.originColumn?.header ?? ''
+  )
+  const [originColumnMode, setOriginColumnMode] = useState<MergeOriginColumnMode>(
+    mergeRule?.originColumn?.mode ?? 'filename'
+  )
+  const [originColumnFixedValue, setOriginColumnFixedValue] = useState(
+    mergeRule?.originColumn?.fixedValue ?? ''
+  )
+  const [originColumnRegex, setOriginColumnRegex] = useState(mergeRule?.originColumn?.regex ?? '')
   const [templateSheetId, setTemplateSheetId] = useState(
     copyRule?.destination.templateSheetId ?? defaultDestination.templateSheetId
   )
@@ -234,13 +250,44 @@ export function RuleEditor({ rule, onClose }: RuleEditorProps): React.JSX.Elemen
           throw new Error('Output directory is required.')
         }
 
+        let originColumn: MergeSheetsRule['originColumn']
+        if (originColumnEnabled) {
+          const header = originColumnHeader.trim()
+          if (!header) {
+            throw new Error('Origin column header is required.')
+          }
+
+          if (originColumnMode === 'regex') {
+            const pattern = originColumnRegex.trim()
+            if (!pattern) {
+              throw new Error('Origin column regex is required.')
+            }
+
+            try {
+              // eslint-disable-next-line no-new
+              new RegExp(pattern)
+            } catch {
+              throw new Error('Origin column regex is invalid.')
+            }
+          }
+
+          originColumn = {
+            enabled: true,
+            header,
+            mode: originColumnMode,
+            ...(originColumnMode === 'fixed' ? { fixedValue: originColumnFixedValue } : {}),
+            ...(originColumnMode === 'regex' ? { regex: originColumnRegex.trim() } : {})
+          }
+        }
+
         const payload = {
           ruleType: 'merge_sheets' as const,
           label: label.trim() || undefined,
           resultSheetName: trimmedResultName,
           outputDirectory: trimmedDirectory,
           skipHeadersAfterFirst: mergeRule?.skipHeadersAfterFirst ?? true,
-          headerRow: mergeRule?.headerRow ?? 1
+          headerRow: mergeRule?.headerRow ?? 1,
+          originColumn
         }
 
         if (rule) {
@@ -584,7 +631,7 @@ export function RuleEditor({ rule, onClose }: RuleEditorProps): React.JSX.Elemen
               <Field
                 label="Output file name"
                 icon={FileText}
-                hint="All imported sheets will be stacked into one sheet in this file"
+                hint="Sheets with the same tab name are merged into one tab in this file"
               >
                 <IconInput
                   icon={FileText}
@@ -609,9 +656,75 @@ export function RuleEditor({ rule, onClose }: RuleEditorProps): React.JSX.Elemen
                 </div>
               </Field>
 
+              <div className="space-y-3 border-t border-white/40 pt-3">
+                <label className="flex items-center gap-2 text-sm text-slate-700">
+                  <input
+                    type="checkbox"
+                    checked={originColumnEnabled}
+                    onChange={(event) => setOriginColumnEnabled(event.target.checked)}
+                    className="rounded border-slate-300"
+                  />
+                  Add origin column
+                </label>
+
+                {originColumnEnabled && (
+                  <div className="space-y-3">
+                    <Field label="Origin column header" icon={Tags}>
+                      <IconInput
+                        icon={Tags}
+                        value={originColumnHeader}
+                        onChange={(event) => setOriginColumnHeader(event.target.value)}
+                        placeholder="e.g. Source"
+                      />
+                    </Field>
+
+                    <Field label="Origin value" icon={Tag}>
+                      <select
+                        value={originColumnMode}
+                        onChange={(event) =>
+                          setOriginColumnMode(event.target.value as MergeOriginColumnMode)
+                        }
+                        className="glass-select w-full px-3 py-2 text-sm"
+                      >
+                        <option value="filename">Source file name</option>
+                        <option value="fixed">Fixed value</option>
+                        <option value="regex">Regex on file name</option>
+                      </select>
+                    </Field>
+
+                    {originColumnMode === 'fixed' && (
+                      <Field label="Fixed value" icon={Tag}>
+                        <IconInput
+                          icon={Tag}
+                          value={originColumnFixedValue}
+                          onChange={(event) => setOriginColumnFixedValue(event.target.value)}
+                          placeholder="Value for every row"
+                        />
+                      </Field>
+                    )}
+
+                    {originColumnMode === 'regex' && (
+                      <Field
+                        label="Regex pattern"
+                        icon={Hash}
+                        hint="Uses the first capture group when present; otherwise the full match. Falls back to the file name when there is no match."
+                      >
+                        <IconInput
+                          icon={Hash}
+                          value={originColumnRegex}
+                          onChange={(event) => setOriginColumnRegex(event.target.value)}
+                          placeholder="e.g. ventas_(\\d{4}-\\d{2})"
+                        />
+                      </Field>
+                    )}
+                  </div>
+                )}
+              </div>
+
               <p className="text-xs text-slate-500">
-                Uses every sheet from the imported source files, in order. Header rows are kept
-                only from the first sheet.
+                Uses every sheet from the imported source files. Tabs with the same name are
+                combined into one output tab. Within each tab, header rows are kept only from the
+                first contributing sheet.
               </p>
             </div>
           )}

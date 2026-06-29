@@ -91,6 +91,16 @@ export interface SheetReference {
   sourceSheetId: string
 }
 
+export type MergeOriginColumnMode = 'fixed' | 'filename' | 'regex'
+
+export interface MergeOriginColumn {
+  enabled: boolean
+  header: string
+  mode: MergeOriginColumnMode
+  fixedValue?: string
+  regex?: string
+}
+
 export type CopyRuleType = 'copy' | 'merge_sheets'
 
 export interface CopySelectionRule {
@@ -109,6 +119,7 @@ export interface MergeSheetsRule {
   outputDirectory: string
   skipHeadersAfterFirst: boolean
   headerRow: number
+  originColumn?: MergeOriginColumn
 }
 
 export type CopyRule = CopySelectionRule | MergeSheetsRule
